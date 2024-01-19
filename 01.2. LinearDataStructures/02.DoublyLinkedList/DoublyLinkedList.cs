@@ -1,115 +1,115 @@
 ﻿namespace Problem02.DoublyLinkedList
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
-	public class DoublyLinkedList<T> : IAbstractLinkedList<T>
-	{
-		private class Node
-		{
-			public T Item { get; set; }
+    public class DoublyLinkedList<T> : IAbstractLinkedList<T>
+    {
+        private class Node
+        {
+            public T Item { get; set; }
 
-			public Node Previous { get; set; }
+            public Node Previous { get; set; }
 
-			public Node Next { get; set; }
-		}
+            public Node Next { get; set; }
+        }
 
-		private Node head;
+        private Node head;
 
-		private Node tail;
+        private Node tail;
 
-		public int Count { get; private set; }
+        public int Count { get; private set; }
 
-		public void AddFirst(T item)
-		{
-			var newHead = new Node { Item = item };
+        public void AddFirst(T item)
+        {
+            var newHead = new Node { Item = item };
 
-			if (Count == 0)
-				head = tail = newHead;
-			else
-			{
-				newHead.Previous = head;
-				head.Next = newHead;
-				head = newHead;
-			}
+            if (Count == 0)
+                head = tail = newHead;
+            else
+            {
+                newHead.Previous = head;
+                head.Next = newHead;
+                head = newHead;
+            }
 
-			Count++;
-		}
+            Count++;
+        }
 
-		public void AddLast(T item)
-		{
-			var newTail = new Node { Item = item };
+        public void AddLast(T item)
+        {
+            var newTail = new Node { Item = item };
 
-			if (Count == 0)
-				head = tail = newTail;
-			else
-			{
-				newTail.Next = tail;
-				tail.Previous = newTail;
-				tail = newTail;
-			}
+            if (Count == 0)
+                head = tail = newTail;
+            else
+            {
+                newTail.Next = tail;
+                tail.Previous = newTail;
+                tail = newTail;
+            }
 
-			this.Count++;
-		}
+            this.Count++;
+        }
 
-		public T GetFirst()
-		{
-			this.EnsureNotEmpty();
+        public T GetFirst()
+        {
+            this.EnsureNotEmpty();
 
-			return this.head.Item;
-		}
+            return this.head.Item;
+        }
 
-		public T GetLast()
-		{
-			EnsureNotEmpty();
+        public T GetLast()
+        {
+            EnsureNotEmpty();
 
-			return this.tail.Item;
-		}
+            return this.tail.Item;
+        }
 
-		public T RemoveFirst()
-		{
-			EnsureNotEmpty();
-			T result = head.Item;
-			head = head.Previous;
-			Count--;
-			
-			if (head != null)
-				tail.Previous = null;
+        public T RemoveFirst()
+        {
+            EnsureNotEmpty();
+            T result = head.Item;
+            head = head.Previous;
+            Count--;
 
-			return result;
-		}
+            if (head != null)
+                tail.Previous = null;
 
-		public T RemoveLast()
-		{
-			EnsureNotEmpty();
-			T result = tail.Item;
-			tail = tail.Next;
-			Count--;
-			
-			if (tail != null)
-				tail.Previous = null;
+            return result;
+        }
 
-			return result;
-		}
+        public T RemoveLast()
+        {
+            EnsureNotEmpty();
+            T result = tail.Item;
+            tail = tail.Next;
+            Count--;
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			var node = head;
-			while (node != null)
-			{
-				yield return node.Item;
-				node = node.Previous;
-			}
-		}
+            if (tail != null)
+                tail.Previous = null;
 
-		IEnumerator IEnumerable.GetEnumerator()
-			=> GetEnumerator();
+            return result;
+        }
 
-		private void EnsureNotEmpty()
-		{
-			if (this.Count == 0)
-				throw new InvalidOperationException("List is empty.");
-		}
-	}
+        public IEnumerator<T> GetEnumerator()
+        {
+            var node = head;
+            while (node != null)
+            {
+                yield return node.Item;
+                node = node.Previous;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
+
+        private void EnsureNotEmpty()
+        {
+            if (this.Count == 0)
+                throw new InvalidOperationException("List is empty.");
+        }
+    }
 }

@@ -1,217 +1,217 @@
 ﻿namespace Tree
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
-	public class Tree<T> : IAbstractTree<T>
-	{
-		private T value;
-		private Tree<T> parent;
-		private List<Tree<T>> children;
+    public class Tree<T> : IAbstractTree<T>
+    {
+        private T value;
+        private Tree<T> parent;
+        private List<Tree<T>> children;
 
-		public Tree(T value)
-		{
-			this.value = value;
-			this.children = new List<Tree<T>>();
-		}
+        public Tree(T value)
+        {
+            this.value = value;
+            this.children = new List<Tree<T>>();
+        }
 
-		public Tree(T value, params Tree<T>[] children)
-			: this(value)
-		{
-			foreach (var child in children)
-			{
-				child.parent = this;
-				this.children.Add(child);
-			}
-		}
+        public Tree(T value, params Tree<T>[] children)
+            : this(value)
+        {
+            foreach (var child in children)
+            {
+                child.parent = this;
+                this.children.Add(child);
+            }
+        }
 
-		public void AddChild(T parentKey, Tree<T> child)
-		{
-			if (this.value.Equals(parentKey))
-			{
-				this.children.Add(child);
-				child.parent = this;
+        public void AddChild(T parentKey, Tree<T> child)
+        {
+            if (this.value.Equals(parentKey))
+            {
+                this.children.Add(child);
+                child.parent = this;
 
-				return;
-			}
+                return;
+            }
 
-			if (!this.children.Any())
-				throw new ArgumentNullException();
+            if (!this.children.Any())
+                throw new ArgumentNullException();
 
-			Tree<T> parentNode = FindNodeByBfs(parentKey);
+            Tree<T> parentNode = FindNodeByBfs(parentKey);
 
-			if (parentNode == null)
-				throw new ArgumentNullException();
+            if (parentNode == null)
+                throw new ArgumentNullException();
 
-			parentNode.children.Add(child);
-			child.parent = parentNode;
-		}
+            parentNode.children.Add(child);
+            child.parent = parentNode;
+        }
 
-		public IEnumerable<T> OrderBfs()
-		{
-			List<T> result = new List<T>();
-			Queue<Tree<T>> queue = new Queue<Tree<T>>();
-			queue.Enqueue(this);
+        public IEnumerable<T> OrderBfs()
+        {
+            List<T> result = new List<T>();
+            Queue<Tree<T>> queue = new Queue<Tree<T>>();
+            queue.Enqueue(this);
 
-			while (queue.Count > 0)
-			{
-				Tree<T> tree = queue.Dequeue();
-				result.Add(tree.value);
+            while (queue.Count > 0)
+            {
+                Tree<T> tree = queue.Dequeue();
+                result.Add(tree.value);
 
-				foreach (var child in tree.children)
-					queue.Enqueue(child);
-			}
+                foreach (var child in tree.children)
+                    queue.Enqueue(child);
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		public IEnumerable<T> OrderDfs()
-		{
-			List<T> result = new List<T>();
-			Dfs(this, result);
+        public IEnumerable<T> OrderDfs()
+        {
+            List<T> result = new List<T>();
+            Dfs(this, result);
 
-			return result;
-		}
-		
-		public void Swap(T firstKey, T secondKey)
-		{
-			if (this.value.Equals(firstKey) || this.value.Equals(secondKey))
-				throw new ArgumentException();
+            return result;
+        }
 
-			//Tree<T> firstNode = FindNodeByDfs(this, firstKey);
-			Tree<T> firstNode = FindNodeByBfs(firstKey);
+        public void Swap(T firstKey, T secondKey)
+        {
+            if (this.value.Equals(firstKey) || this.value.Equals(secondKey))
+                throw new ArgumentException();
 
-			if (firstNode == null)
-				throw new ArgumentNullException();
+            //Tree<T> firstNode = FindNodeByDfs(this, firstKey);
+            Tree<T> firstNode = FindNodeByBfs(firstKey);
 
-			//Tree<T> secondNode = FindNodeByDfs(this, secondKey);
-			Tree<T> secondNode = FindNodeByBfs(secondKey);
+            if (firstNode == null)
+                throw new ArgumentNullException();
 
-			if (secondNode == null)
-				throw new ArgumentNullException();
+            //Tree<T> secondNode = FindNodeByDfs(this, secondKey);
+            Tree<T> secondNode = FindNodeByBfs(secondKey);
 
-			Tree<T> firstNodeParent = firstNode.parent;
-			Tree<T> secondNodeParent = secondNode.parent;
-			int secondNodeIndex = secondNodeParent.children.IndexOf(secondNode);
-			int firstNodeIndex = firstNodeParent.children.IndexOf(firstNode);
+            if (secondNode == null)
+                throw new ArgumentNullException();
 
-			if (IsNodeChild(child: firstNode, parent: secondNode))
-			{
-				secondNodeParent.children[secondNodeIndex] = firstNode;
-			}
-			else if (IsNodeChild(child: secondNode, parent: firstNode))
-			{
-				firstNodeParent.children[firstNodeIndex] = secondNode;
-			}
-			else
-			{
-				firstNodeParent.children[firstNodeIndex] = secondNode;
-				secondNode.parent = firstNodeParent;
+            Tree<T> firstNodeParent = firstNode.parent;
+            Tree<T> secondNodeParent = secondNode.parent;
+            int secondNodeIndex = secondNodeParent.children.IndexOf(secondNode);
+            int firstNodeIndex = firstNodeParent.children.IndexOf(firstNode);
 
-				secondNodeParent.children[secondNodeIndex] = firstNode;
-				firstNode.parent = secondNodeParent;
-			}
-		}
-		
-		public void RemoveNode(T nodeKey)
-		{
-			//RemoveByBfs(nodeKey);
-			RemoveByDfs(nodeKey);
-		}
+            if (IsNodeChild(child: firstNode, parent: secondNode))
+            {
+                secondNodeParent.children[secondNodeIndex] = firstNode;
+            }
+            else if (IsNodeChild(child: secondNode, parent: firstNode))
+            {
+                firstNodeParent.children[firstNodeIndex] = secondNode;
+            }
+            else
+            {
+                firstNodeParent.children[firstNodeIndex] = secondNode;
+                secondNode.parent = firstNodeParent;
 
-		private void RemoveByBfs(T nodeKey)
-		{
-			if (this.value.Equals(nodeKey))
-				throw new ArgumentException();
+                secondNodeParent.children[secondNodeIndex] = firstNode;
+                firstNode.parent = secondNodeParent;
+            }
+        }
 
-			Tree<T> node = FindNodeByBfs(nodeKey);
+        public void RemoveNode(T nodeKey)
+        {
+            //RemoveByBfs(nodeKey);
+            RemoveByDfs(nodeKey);
+        }
 
-			if (node == null)
-				throw new ArgumentNullException();
+        private void RemoveByBfs(T nodeKey)
+        {
+            if (this.value.Equals(nodeKey))
+                throw new ArgumentException();
 
-			Tree<T> parentNode = node.parent;
-			parentNode.children.Remove(node);
-			node.parent = null;
-		}
+            Tree<T> node = FindNodeByBfs(nodeKey);
 
-		private void RemoveByDfs(T nodeKey)
-		{
-			if (this.value.Equals(nodeKey))
-				throw new ArgumentException();
+            if (node == null)
+                throw new ArgumentNullException();
 
-			Tree<T> node = FindNodeByDfs(this, nodeKey);
+            Tree<T> parentNode = node.parent;
+            parentNode.children.Remove(node);
+            node.parent = null;
+        }
 
-			if (node != null)
-			{
-				Tree<T> parent = node.parent;
-				parent.children.Remove(node);
-				node.parent = null;
-			}
-			else
-				throw new ArgumentNullException();
-		}
-		
-		private void Dfs(Tree<T> tree, ICollection<T> result)
-		{
-			foreach (var child in tree.children)
-				Dfs(child, result);
+        private void RemoveByDfs(T nodeKey)
+        {
+            if (this.value.Equals(nodeKey))
+                throw new ArgumentException();
 
-			result.Add(tree.value);
-		}
+            Tree<T> node = FindNodeByDfs(this, nodeKey);
 
-		private Tree<T> FindNodeByBfs(T parentKey)
-		{
-			Queue<Tree<T>> queue = new Queue<Tree<T>>();
-			queue.Enqueue(this);
+            if (node != null)
+            {
+                Tree<T> parent = node.parent;
+                parent.children.Remove(node);
+                node.parent = null;
+            }
+            else
+                throw new ArgumentNullException();
+        }
 
-			while (queue.Count > 0)
-			{
-				Tree<T> subtree = queue.Dequeue();
+        private void Dfs(Tree<T> tree, ICollection<T> result)
+        {
+            foreach (var child in tree.children)
+                Dfs(child, result);
 
-				foreach (var child in subtree.children)
-				{
-					if (child.value.Equals(parentKey))
-						return child;
+            result.Add(tree.value);
+        }
 
-					queue.Enqueue(child);
-				}
-			}
+        private Tree<T> FindNodeByBfs(T parentKey)
+        {
+            Queue<Tree<T>> queue = new Queue<Tree<T>>();
+            queue.Enqueue(this);
 
-			return null;
-		}
+            while (queue.Count > 0)
+            {
+                Tree<T> subtree = queue.Dequeue();
 
-		private Tree<T> FindNodeByDfs(Tree<T> root, T nodeKey)
-		{
-			foreach (Tree<T> child in root.children)
-			{
-				if (child.value.Equals(nodeKey))
-				{
-					return child;
-				}
-				else
-				{
-					Tree<T> node = FindNodeByDfs(child, nodeKey);
+                foreach (var child in subtree.children)
+                {
+                    if (child.value.Equals(parentKey))
+                        return child;
 
-					if (node != null)
-						return node;
-				}
-			}
+                    queue.Enqueue(child);
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		private bool IsNodeChild(Tree<T> child, Tree<T> parent)
-		{
-			while (child.parent != null)
-			{
-				if (child.parent.Equals(parent))
-					return true;
+        private Tree<T> FindNodeByDfs(Tree<T> root, T nodeKey)
+        {
+            foreach (Tree<T> child in root.children)
+            {
+                if (child.value.Equals(nodeKey))
+                {
+                    return child;
+                }
+                else
+                {
+                    Tree<T> node = FindNodeByDfs(child, nodeKey);
 
-				child = child.parent;
-			}
+                    if (node != null)
+                        return node;
+                }
+            }
 
-			return false;
-		}
-	}
+            return null;
+        }
+
+        private bool IsNodeChild(Tree<T> child, Tree<T> parent)
+        {
+            while (child.parent != null)
+            {
+                if (child.parent.Equals(parent))
+                    return true;
+
+                child = child.parent;
+            }
+
+            return false;
+        }
+    }
 }

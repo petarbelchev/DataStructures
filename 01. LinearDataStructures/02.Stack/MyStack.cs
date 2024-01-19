@@ -1,97 +1,97 @@
 ﻿namespace Problem02.Stack
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
-	public class MyStack<T> : IAbstractStack<T>
-	{
-		private class Node
-		{
-			public Node(T element)
-			{
-				this.Element = element;
-			}
+    public class MyStack<T> : IAbstractStack<T>
+    {
+        private class Node
+        {
+            public Node(T element)
+            {
+                this.Element = element;
+            }
 
-			public Node(T element, Node next)
-			   : this(element)
-			{
-				this.Next = next;
-			}
+            public Node(T element, Node next)
+               : this(element)
+            {
+                this.Next = next;
+            }
 
-			public T Element { get; set; }
+            public T Element { get; set; }
 
-			public Node Next { get; set; }
-		}
+            public Node Next { get; set; }
+        }
 
-		private Node top;
+        private Node top;
 
-		public int Count { get; private set; }
+        public int Count { get; private set; }
 
-		public void Push(T item)
-		{
-			if (this.top == null)
-			{
-				this.top = new Node(item);
-			}
-			else
-			{
-				var newTop = new Node(item, this.top);
-				this.top = newTop;
-			}
+        public void Push(T item)
+        {
+            if (this.top == null)
+            {
+                this.top = new Node(item);
+            }
+            else
+            {
+                var newTop = new Node(item, this.top);
+                this.top = newTop;
+            }
 
-			this.Count++;
-		}
+            this.Count++;
+        }
 
-		public T Pop()
-		{
-			this.EnsureNotEmpty();
-			var oldTop = this.top.Element;
-			this.top = this.top.Next;
-			this.Count--;
-			
-			return oldTop;
-		}
+        public T Pop()
+        {
+            this.EnsureNotEmpty();
+            var oldTop = this.top.Element;
+            this.top = this.top.Next;
+            this.Count--;
 
-		public T Peek()
-		{
-			this.EnsureNotEmpty();
-			return this.top.Element;
-		}
+            return oldTop;
+        }
 
-		public bool Contains(T item)
-		{
-			var node = this.top;
+        public T Peek()
+        {
+            this.EnsureNotEmpty();
+            return this.top.Element;
+        }
 
-			while (node != null)
-			{
-				if (node.Element.Equals(item))
-					return true;
-				
-				node = node.Next;
-			}
+        public bool Contains(T item)
+        {
+            var node = this.top;
 
-			return false;
-		}
+            while (node != null)
+            {
+                if (node.Element.Equals(item))
+                    return true;
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			var node = this.top;
+                node = node.Next;
+            }
 
-			while (node != null)
-			{
-				yield return node.Element;
-				node = node.Next;
-			}
-		}
+            return false;
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-			=> this.GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            var node = this.top;
 
-		private void EnsureNotEmpty()
-		{
-			if (this.top == null)
-				throw new InvalidOperationException("Stack is empty.");
-		}
-	}
+            while (node != null)
+            {
+                yield return node.Element;
+                node = node.Next;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => this.GetEnumerator();
+
+        private void EnsureNotEmpty()
+        {
+            if (this.top == null)
+                throw new InvalidOperationException("Stack is empty.");
+        }
+    }
 }

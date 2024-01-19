@@ -2,7 +2,7 @@
 {
     using System;
 
-    public interface IAbstractHeap<T> 
+    public interface IAbstractHeap<T>
         where T : IComparable<T>
     {
         int Size { get; }
